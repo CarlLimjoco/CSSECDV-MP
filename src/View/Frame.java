@@ -252,47 +252,54 @@ public class Frame extends javax.swing.JFrame {
         chances++;
         
         for (int i = 0; i < users.size(); i++)
-            if (users.get(i).getUsername().equals(username))
+            if (users.get(i).getUsername().equals(username)) {
                 if (users.get(i).getPassword().equals(password)) {
-                    frameView.show(Container, "homePnl");
-                    
-                    switch(users.get(i).getRole()) {
-                        case 2: clientHomePnl.showPnl("home");
+                    if (users.get(i).getLocked() == 0) {
+                        frameView.show(Container, "homePnl");
+
+                        switch(users.get(i).getRole()) {
+                            case 2:
+                                clientHomePnl.showPnl("home");
                                 contentView.show(Content, "clientHomePnl");
-                                
+
                                 adminBtn.setEnabled(false);
                                 managerBtn.setEnabled(false);
                                 staffBtn.setEnabled(false);
                                 clientBtn.setEnabled(true);
-                            break;
-                        case 3: staffHomePnl.showPnl("home");
+                                break;
+                            case 3:
+                                staffHomePnl.showPnl("home");
                                 contentView.show(Content, "staffHomePnl");
-                                
+
                                 adminBtn.setEnabled(false);
                                 managerBtn.setEnabled(false);
                                 staffBtn.setEnabled(true);
                                 clientBtn.setEnabled(false);
-                            break;
-                        case 4: managerHomePnl.showPnl("home");
+                                break;
+                            case 4:
+                                managerHomePnl.showPnl("home");
                                 contentView.show(Content, "managerHomePnl");
-                                
+
                                 adminBtn.setEnabled(false);
                                 managerBtn.setEnabled(true);
                                 staffBtn.setEnabled(false);
                                 clientBtn.setEnabled(false);
-                            break;
-                        case 5: adminHomePnl.showPnl("home");
+                                break;
+                            case 5:
+                                adminHomePnl.showPnl("home");
                                 contentView.show(Content, "adminHomePnl");
-                                
+
                                 adminBtn.setEnabled(true);
                                 managerBtn.setEnabled(false);
                                 staffBtn.setEnabled(false);
                                 clientBtn.setEnabled(false);
+                                break;
+                        }
+
+                        chances = 0;
                     }
-                    
-                    chances = 0;
                 }
- 
+            }
         return chances;
     }
     
