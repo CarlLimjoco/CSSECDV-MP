@@ -104,7 +104,7 @@ public class Login extends javax.swing.JPanel {
         String username = usernameFld.getText();
         String password = passwordFld.getText();
         
-        // Password should be at least: one uppercase letter, one lowercase letter, one number, and minimum of 8 characters in total
+        // Password should be at least: one letter, one number, and minimum of 8 characters in total
         String strongPasswordRegex = "^(?=.*[a-zA-Z])(?=.*\\d)[a-zA-Z0-9]{8,}$";
         
         if (!password.matches(strongPasswordRegex)) { // Check if password doesn't fit password strength

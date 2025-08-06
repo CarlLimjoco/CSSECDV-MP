@@ -5,7 +5,11 @@ import Model.User;
 import java.awt.BorderLayout;
 import java.awt.CardLayout;
 import java.awt.Dimension;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
 import java.util.ArrayList;
+import java.util.Base64;
 import javax.swing.WindowConstants;
 
 public class Frame extends javax.swing.JFrame {
@@ -250,10 +254,13 @@ public class Frame extends javax.swing.JFrame {
         ArrayList<User> users = main.sqlite.getUsers();
         
         chances++;
-        
+                
         for (int i = 0; i < users.size(); i++)
             if (users.get(i).getUsername().equals(username)) {
-                if (users.get(i).getPassword().equals(password)) {
+                
+                String hashPass = users.get(i).getPassword();
+
+                if (verifyPassword(password, hashPass)) {
                     if (users.get(i).getLocked() == 0) {
                         frameView.show(Container, "homePnl");
 
@@ -300,6 +307,7 @@ public class Frame extends javax.swing.JFrame {
                     }
                 }
             }
+        
         return chances;
     }
     
@@ -312,8 +320,54 @@ public class Frame extends javax.swing.JFrame {
     }
     
     public void registerAction(String username, String password, String confpass){
-        if (password.equals(confpass))
-            main.sqlite.addUser(username, password);
+        if (password.equals(confpass)) {
+            String hashPass = hashPassword(password);
+            main.sqlite.addUser(username, hashPass);
+        }
+    }
+    
+    public static String hashPassword(String password) {
+        try {
+            // Generate random salt
+            SecureRandom random = new SecureRandom();
+            byte[] salt = new byte[16];
+            random.nextBytes(salt);
+            
+            // Hash password with salt
+            MessageDigest md = MessageDigest.getInstance("SHA-256");
+            md.update(salt);
+            byte[] hashedPassword = md.digest(password.getBytes());
+            
+            // Combine salt and hash for storage
+            String saltBase64 = Base64.getEncoder().encodeToString(salt);
+            String hashBase64 = Base64.getEncoder().encodeToString(hashedPassword);
+            
+            return saltBase64 + ":" + hashBase64;
+            
+        } catch (NoSuchAlgorithmException e) {
+            throw new RuntimeException("SHA-256 not available", e);
+        }
+    }
+    
+    public static boolean verifyPassword(String password, String storedPassword) {
+        try {
+            String[] parts = storedPassword.split(":");
+            if (parts.length != 2) return false;
+            
+            byte[] salt = Base64.getDecoder().decode(parts[0]);
+            byte[] storedHash = Base64.getDecoder().decode(parts[1]);
+            
+            // Hash the provided password with the stored salt
+            MessageDigest md = MessageDigest.getInstance("SHA-256");
+            md.update(salt);
+            byte[] hashedPassword = md.digest(password.getBytes());
+            
+            // Compare hashes
+            return MessageDigest.isEqual(storedHash, hashedPassword);
+            
+        } catch (Exception e) {
+            return false;
+        }
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
