@@ -107,8 +107,10 @@ public class Login extends javax.swing.JPanel {
             JOptionPane.showMessageDialog(null, 
                 "Too many failed attempts. Account locked for 10 seconds.");
         } else if (chncs != 0) {
-            JOptionPane.showMessageDialog(null, 
-                "Invalid credentials. Attempts remaining: " + (5 - chncs));
+            JOptionPane.showMessageDialog(null,
+                "Invalid username or password.",
+                "Login Failed",
+                JOptionPane.ERROR_MESSAGE);
         }
     }//GEN-LAST:event_loginBtnActionPerformed
 
