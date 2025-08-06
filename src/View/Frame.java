@@ -1,9 +1,11 @@
 package View;
 
 import Controller.Main;
+import Model.User;
 import java.awt.BorderLayout;
 import java.awt.CardLayout;
 import java.awt.Dimension;
+import java.util.ArrayList;
 import javax.swing.WindowConstants;
 
 public class Frame extends javax.swing.JFrame {
@@ -244,8 +246,19 @@ public class Frame extends javax.swing.JFrame {
         this.setVisible(true);
     }
     
-    public void mainNav(){
-        frameView.show(Container, "homePnl");
+    public int mainNav(String username, String password, int chances){
+        ArrayList<User> users = main.sqlite.getUsers();
+        
+        chances++;
+        
+        for (int i = 0; i < users.size(); i++)
+            if (users.get(i).getUsername().equals(username))
+                if (users.get(i).getPassword().equals(password)) {
+                    frameView.show(Container, "homePnl");
+                    chances = 0;
+                }
+ 
+        return chances;
     }
     
     public void loginNav(){
@@ -257,7 +270,8 @@ public class Frame extends javax.swing.JFrame {
     }
     
     public void registerAction(String username, String password, String confpass){
-        main.sqlite.addUser(username, password);
+        if (password.equals(confpass))
+            main.sqlite.addUser(username, password);
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

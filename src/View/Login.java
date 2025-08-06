@@ -1,9 +1,14 @@
 
 package View;
 
+import javax.swing.JOptionPane;
+
 public class Login extends javax.swing.JPanel {
 
     public Frame frame;
+    public int chncs;
+    private long lockoutTime = 0;
+    private final long LOCKOUT_DURATION = 10000;
     
     public Login() {
         initComponents();
@@ -83,7 +88,28 @@ public class Login extends javax.swing.JPanel {
         );
     }// </editor-fold>//GEN-END:initComponents
     private void loginBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_loginBtnActionPerformed
-        frame.mainNav();
+        if (lockoutTime > 0 && System.currentTimeMillis() < lockoutTime) {
+            long remaining = (lockoutTime - System.currentTimeMillis()) / 1000;
+            JOptionPane.showMessageDialog(null, 
+                "Account locked. Try again in " + remaining + " seconds.");
+            return;
+        } else if (lockoutTime > 0 && System.currentTimeMillis() >= lockoutTime) {
+            // Lockout period expired, reset
+            chncs = 0;
+            lockoutTime = 0;
+        }
+        
+        if (chncs < 5)
+            chncs = frame.mainNav(usernameFld.getText(), passwordFld.getText(), chncs);
+        
+        if (chncs >= 5) {
+            lockoutTime = System.currentTimeMillis() + LOCKOUT_DURATION;
+            JOptionPane.showMessageDialog(null, 
+                "Too many failed attempts. Account locked for 10 seconds.");
+        } else if (chncs != 0) {
+            JOptionPane.showMessageDialog(null, 
+                "Invalid credentials. Attempts remaining: " + (5 - chncs));
+        }
     }//GEN-LAST:event_loginBtnActionPerformed
 
     private void registerBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_registerBtnActionPerformed
