@@ -97,10 +97,33 @@ public class Register extends javax.swing.JPanel {
     }// </editor-fold>//GEN-END:initComponents
 
     private void registerBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_registerBtnActionPerformed
-        if (passwordFld.getText().equals(confpassFld.getText())){
-            frame.registerAction(usernameFld.getText(), passwordFld.getText(), confpassFld.getText());
-            frame.loginNav();
+        String username = usernameFld.getText();
+        String password = passwordFld.getText();
+        String confirmPassword = confpassFld.getText();
+        
+        // Password should be at least: one uppercase letter, one lowercase letter, one number, and minimum of 8 characters in total
+        String strongPasswordRegex = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d).{8,}$";
+
+        if (!password.matches(strongPasswordRegex)) { // Check if password doesn't fit password strength
+            // Pop-up message if password is weak
+            javax.swing.JOptionPane.showMessageDialog(this,
+                "Password must be at least 8 characters long and include uppercase, lowercase, and a number.",
+                "Weak Password",
+                javax.swing.JOptionPane.ERROR_MESSAGE);
+            return;
         }
+
+        if (!password.equals(confirmPassword)) { // Checks if password and confirm password don't match
+            // Pop-up message if passwords don't match
+            javax.swing.JOptionPane.showMessageDialog(this,
+                "Password and Confirm Password do not match.",
+                "Mismatch",
+                javax.swing.JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        frame.registerAction(username, password, confirmPassword);
+        frame.loginNav();
     }//GEN-LAST:event_registerBtnActionPerformed
 
     private void backBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_backBtnActionPerformed
