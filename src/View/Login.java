@@ -88,6 +88,7 @@ public class Login extends javax.swing.JPanel {
         );
     }// </editor-fold>//GEN-END:initComponents
     private void loginBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_loginBtnActionPerformed
+        // Check if Locked out
         if (lockoutTime > 0 && System.currentTimeMillis() < lockoutTime) {
             long remaining = (lockoutTime - System.currentTimeMillis()) / 1000;
             JOptionPane.showMessageDialog(null, 
@@ -99,16 +100,33 @@ public class Login extends javax.swing.JPanel {
             lockoutTime = 0;
         }
         
-        if (chncs < 5)
-            chncs = frame.mainNav(usernameFld.getText(), passwordFld.getText(), chncs);
         
+        String username = usernameFld.getText();
+        String password = passwordFld.getText();
+        
+        // Password should be at least: one uppercase letter, one lowercase letter, one number, and minimum of 8 characters in total
+        String strongPasswordRegex = "^(?=.*[a-zA-Z])(?=.*\\d)[a-zA-Z0-9]{8,}$";
+        
+        if (!password.matches(strongPasswordRegex)) { // Check if password doesn't fit password strength
+            // Pop-up message if password is weak
+            javax.swing.JOptionPane.showMessageDialog(this,
+                "Password must be at least 8 characters long and include uppercase, lowercase, and a number.",
+                "Weak Password",
+                javax.swing.JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+        
+        if (chncs < 5)
+            chncs = frame.mainNav(username, password, chncs);
+        
+        // Locks out if passed maximum attempts
         if (chncs >= 5) {
             lockoutTime = System.currentTimeMillis() + LOCKOUT_DURATION;
             JOptionPane.showMessageDialog(null, 
                 "Too many failed attempts. Account locked for 10 seconds.");
         } else if (chncs != 0) {
             JOptionPane.showMessageDialog(null,
-                "Invalid username or password.",
+                "Invalid username or password. Attempts Remaining: " + (5 - chncs),
                 "Login Failed",
                 JOptionPane.ERROR_MESSAGE);
         }

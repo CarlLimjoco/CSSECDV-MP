@@ -102,7 +102,7 @@ public class Register extends javax.swing.JPanel {
         String confirmPassword = confpassFld.getText();
         
         // Password should be at least: one uppercase letter, one lowercase letter, one number, and minimum of 8 characters in total
-        String strongPasswordRegex = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d).{8,}$";
+        String strongPasswordRegex = "^(?=.*[a-zA-Z])(?=.*\\d)[a-zA-Z0-9]{8,}$";
 
         if (!password.matches(strongPasswordRegex)) { // Check if password doesn't fit password strength
             // Pop-up message if password is weak
